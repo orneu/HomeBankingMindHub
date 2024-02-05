@@ -17,6 +17,24 @@
                 context.SaveChanges();
             }
 
+            if (!context.Account.Any())
+            {
+                var accountOrnella = context.Clients.FirstOrDefault(c => c.Email == "ornellajazminpacino@gmail.com");
+                if (accountOrnella != null)
+                {
+                    var accounts = new Account[]
+                    {
+                        new Account {ClientId = accountOrnella.Id, CreationDate = DateTime.Now, Number = string.Empty, Balance = 0 }
+                    };
+                    foreach (Account account in accounts)
+                    {
+                        context.Account.Add(account);
+                    }
+                    context.SaveChanges();
+
+                }
+            }
+
         }
 
     }
