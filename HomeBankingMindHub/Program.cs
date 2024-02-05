@@ -1,5 +1,6 @@
 using HomeBankingMindHub.Models;
-using HomeBankingMindHub.Repositories;
+using HomeBankingMindHub.Repositories.Implemetation;
+using HomeBankingMindHub.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
