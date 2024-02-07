@@ -1,4 +1,5 @@
 ﻿using HomeBankingMindHub.Models;
+using HomeBankingMindHub.Models.Classes;
 using HomeBankingMindHub.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-﻿using HomeBankingMindHub.Models;
+﻿using HomeBankingMindHub.Models.Classes;
 
 namespace HomeBankingMindHub.Repositories.Interfaces
 {

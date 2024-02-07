@@ -1,4 +1,5 @@
 ﻿using HomeBankingMindHub.Models;
+using HomeBankingMindHub.Models.Classes;
 using HomeBankingMindHub.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace HomeBankingMindHub.Repositories.Implemetation
         {
             return FindByCondition(client => client.Id == id)
                 .Include(client => client.Accounts)
+                .Include(client => client.ClientLoans)
+                .ThenInclude(cl => cl.Loan)
                 .FirstOrDefault();
         }
 
@@ -21,6 +24,8 @@ namespace HomeBankingMindHub.Repositories.Implemetation
         {
             return FindAll()
                 .Include(client => client.Accounts)
+                .Include(client => client.ClientLoans)
+                .ThenInclude(cl => cl.Loan)
                 .ToList();
         }
 
@@ -29,5 +34,7 @@ namespace HomeBankingMindHub.Repositories.Implemetation
             Create(client);
             SaveChanges();
         }
+
+
     }
 }

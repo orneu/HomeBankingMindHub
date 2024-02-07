@@ -1,6 +1,6 @@
 ﻿using HomeBankingMindHub.Models.DTOs;
 
-namespace HomeBankingMindHub.Models
+namespace HomeBankingMindHub.Models.Classes
 {
     public class Transaction
     {
