@@ -8,11 +8,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 // Add DbContext to the container.
 builder.Services.AddDbContext<HomeBankingContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("HomeBankingConexion")));
 
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
+
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
 builder.Services.AddControllers();
 
@@ -30,7 +35,6 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     try
     {
-
         // En este paso buscamos un service que este con la clase HomeBankingContext
         var context = services.GetRequiredService<HomeBankingContext>();
         DbInitializer.Initialize(context);
@@ -51,7 +55,17 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 app.UseAuthorization();
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -63,5 +77,9 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 app.MapRazorPages();
- 
+
+app.UseDefaultFiles();
+
+app.UseStaticFiles();
+
 app.Run();
