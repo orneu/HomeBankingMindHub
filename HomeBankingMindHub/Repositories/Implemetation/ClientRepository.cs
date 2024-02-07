@@ -8,9 +8,7 @@ namespace HomeBankingMindHub.Repositories.Implemetation
 {
     public class ClientRepository : RepositoryBase<Client>, IClientRepository
     {
-        public ClientRepository(HomeBankingContext repositoryContext) : base(repositoryContext)
-        {
-        }
+        public ClientRepository(HomeBankingContext repositoryContext) : base(repositoryContext){}
 
         public Client FindById(long id)
         {

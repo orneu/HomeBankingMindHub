@@ -1,5 +1,5 @@
-﻿using HomeBankingMindHub.dtos;
-using HomeBankingMindHub.Models;
+﻿using HomeBankingMindHub.Models;
+using HomeBankingMindHub.Models.DTOs;
 using HomeBankingMindHub.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -95,5 +95,28 @@ namespace HomeBankingMindHub.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpPost]
+        public IActionResult Post(ClientFormDTO clientForm)
+        {
+            try
+            {
+
+                Client client = new Client();
+
+                client.FirstName = clientForm.FirstName;
+                client.LastName= clientForm.LastName;
+                client.Email= clientForm.Email;
+
+                _clientRepository.Save(client);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
     }
 }
