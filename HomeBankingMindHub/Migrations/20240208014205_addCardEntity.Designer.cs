@@ -4,6 +4,7 @@ using HomeBankingMindHub.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeBankingMindHub.Migrations
 {
     [DbContext(typeof(HomeBankingContext))]
-    partial class HomeBankingContextModelSnapshot : ModelSnapshot
+    [Migration("20240208014205_addCardEntity")]
+    partial class addCardEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,14 +60,17 @@ namespace HomeBankingMindHub.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<int>("CardColor")
+                        .HasColumnType("int");
+
                     b.Property<string>("CardHolder")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CardType")
+                        .HasColumnType("int");
+
                     b.Property<long>("ClientId")
                         .HasColumnType("bigint");
-
-                    b.Property<int>("Color")
-                        .HasColumnType("int");
 
                     b.Property<int>("Cvv")
                         .HasColumnType("int");
@@ -77,9 +83,6 @@ namespace HomeBankingMindHub.Migrations
 
                     b.Property<DateTime>("ThruDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -161,7 +164,7 @@ namespace HomeBankingMindHub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Credits");
+                    b.ToTable("Loans");
                 });
 
             modelBuilder.Entity("HomeBankingMindHub.Models.Classes.Transaction", b =>
@@ -184,8 +187,8 @@ namespace HomeBankingMindHub.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -217,7 +220,7 @@ namespace HomeBankingMindHub.Migrations
             modelBuilder.Entity("HomeBankingMindHub.Models.Classes.ClientLoan", b =>
                 {
                     b.HasOne("HomeBankingMindHub.Models.Classes.Client", "Client")
-                        .WithMany("ClientLoan")
+                        .WithMany("ClientLoans")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -253,7 +256,7 @@ namespace HomeBankingMindHub.Migrations
 
                     b.Navigation("Cards");
 
-                    b.Navigation("ClientLoan");
+                    b.Navigation("ClientLoans");
                 });
 
             modelBuilder.Entity("HomeBankingMindHub.Models.Classes.Loan", b =>
