@@ -1,4 +1,5 @@
-﻿using HomeBankingMindHub.Models;
+﻿using HomeBankingMindHub.dtos;
+using HomeBankingMindHub.Models.Classes;
 using HomeBankingMindHub.Models.DTOs;
 using HomeBankingMindHub.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -44,6 +45,14 @@ namespace HomeBankingMindHub.Controllers
                             CreationDate = ac.CreationDate,
                             Number = ac.Number
 
+                        }).ToList(),
+                        Loans = client.ClientLoans.Select(cl => new ClientLoanDTO
+                        {
+                            Id = cl.Id,
+                            LoanId = cl.LoanId,
+                            Name = cl.Loan.Name,
+                            Amount = cl.Amount,
+                            Payments = int.Parse(cl.Payments)
                         }).ToList()
 
                     };
@@ -86,12 +95,22 @@ namespace HomeBankingMindHub.Controllers
                         Balance = ac.Balance,
                         CreationDate = ac.CreationDate,
                         Number = ac.Number
+                    }).ToList(),
+
+                    Loans = client.ClientLoans.Select(cl => new ClientLoanDTO
+                    {
+                        Id = cl.Id,
+                        LoanId = cl.LoanId,
+                        Name = cl.Loan.Name,
+                        Amount = cl.Amount,
+                        Payments = int.Parse(cl.Payments)
                     }).ToList()
+
                 };
                 return Ok(clientDTO);
             }
             catch (Exception ex)
-            {   
+            {
                 return StatusCode(500, ex.Message);
             }
         }
@@ -105,8 +124,8 @@ namespace HomeBankingMindHub.Controllers
                 Client client = new Client();
 
                 client.FirstName = clientForm.FirstName;
-                client.LastName= clientForm.LastName;
-                client.Email= clientForm.Email;
+                client.LastName = clientForm.LastName;
+                client.Email = clientForm.Email;
 
                 _clientRepository.Save(client);
                 return Ok();

@@ -1,5 +1,5 @@
 ﻿using HomeBankingMindHub.Models.Classes;
-using HomeBankingMindHub.Models.ENUMs;
+using HomeBankingMindHub.Models.ENUM;
 
 namespace HomeBankingMindHub.Models
 {
