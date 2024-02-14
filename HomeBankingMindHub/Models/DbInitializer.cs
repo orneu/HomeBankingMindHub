@@ -1,4 +1,4 @@
-﻿using HomeBankingMindHub.Models.Classes;
+﻿using HomeBankingMindHub.Models.Entities;
 using HomeBankingMindHub.Models.ENUM;
 
 namespace HomeBankingMindHub.Models

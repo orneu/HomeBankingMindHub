@@ -1,4 +1,4 @@
-﻿namespace HomeBankingMindHub.Models.Classes
+﻿namespace HomeBankingMindHub.Models.Entities
 {
     public class ClientLoan
     { 

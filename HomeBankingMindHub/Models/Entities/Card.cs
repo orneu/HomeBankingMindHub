@@ -1,6 +1,6 @@
 ﻿using HomeBankingMindHub.Models.ENUM;
 
-namespace HomeBankingMindHub.Models.Classes
+namespace HomeBankingMindHub.Models.Entities
 {
     public class Card
     {

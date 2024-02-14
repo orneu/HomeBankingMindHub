@@ -1,4 +1,4 @@
-﻿using HomeBankingMindHub.Models.Classes;
+﻿using HomeBankingMindHub.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeBankingMindHub.Models

@@ -1,4 +1,4 @@
-﻿namespace HomeBankingMindHub.dtos
+﻿namespace HomeBankingMindHub.DTOs
 {   public class ClientLoanDTO
     {   public long Id { get; set; }
         public long LoanId { get; set; }

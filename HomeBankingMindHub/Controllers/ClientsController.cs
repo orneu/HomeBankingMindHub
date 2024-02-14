@@ -1,5 +1,6 @@
-﻿using HomeBankingMindHub.dtos;
-using HomeBankingMindHub.Models.Classes;
+﻿using HomeBankingMindHub.Models.Entities;
+using HomeBankingMindHub.Models;
+using HomeBankingMindHub.Models.ENUM;
 using HomeBankingMindHub.Models.DTOs;
 using HomeBankingMindHub.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HomeBankingMindHub.DTOs;
 
 namespace HomeBankingMindHub.Controllers
 {
@@ -141,6 +143,44 @@ namespace HomeBankingMindHub.Controllers
         }
 
         [HttpPost]
+        public IActionResult Post([FromBody] Client client)
+        {
+            try
+            {
+                //validamos datos antes
+                if (String.IsNullOrEmpty(client.Email) || String.IsNullOrEmpty(client.Password) || String.IsNullOrEmpty(client.FirstName) || String.IsNullOrEmpty(client.LastName))
+                    return StatusCode(403, "datos inválidos");
+
+                //buscamos si ya existe el usuario
+                Client user = _clientRepository.FindByEmail(client.Email);
+
+                if (user != null)
+                {
+                    return StatusCode(403, "Email está en uso");
+                }
+
+                Client newClient = new Client
+                {
+                    Email = client.Email,
+                    Password = client.Password,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                };
+
+                _clientRepository.Save(newClient);
+                return Created("", newClient);
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+
+
+        [HttpPost]
         public IActionResult Post(ClientFormDTO clientForm)
         {
             try
@@ -160,6 +200,69 @@ namespace HomeBankingMindHub.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+            [HttpGet("current")]
+        public IActionResult GetCurrent()
+        {
+            try
+            {
+                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
+                if (email == string.Empty) 
+                { 
+                    return StatusCode(401,"Unauthorized");
+                }
+
+                Client client = _clientRepository.FindByEmail(email);
+
+                if (client == null)
+                {
+                    return StatusCode(401, "Unauthorized");
+                }
+
+                var clientDTO = new ClientDTO
+                {
+                    Id = client.Id,
+                    Email = client.Email,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                    Accounts = client.Accounts.Select(ac => new AccountDTO
+                    {
+                        Id = ac.Id,
+                        Balance = ac.Balance,
+                        CreationDate = ac.CreationDate,
+                        Number = ac.Number
+                    }).ToList(),
+                    Credits = client.ClientLoan.Select(cl => new ClientLoanDTO
+                    {
+                        Id = cl.Id,
+                        LoanId = cl.LoanId,
+                        Name = cl.Loan.Name,
+                        Amount = cl.Amount,
+                        Payments = int.Parse(cl.Payments)
+                    }).ToList(),
+                    Cards = client.Cards.Select(c => new CardDTO
+                    {
+                        Id = c.Id,
+                        CardHolder = c.CardHolder,
+                        Type = c.Type.ToString(),
+                        Color = c.Color.ToString(),
+                        Cvv = c.Cvv,
+                        FromDate = c.FromDate,
+                        Number = c.Number,
+                        ThruDate = c.ThruDate
+                       
+                    }).ToList()
+                };
+
+                return Ok(clientDTO);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+ 
 
 
     }
