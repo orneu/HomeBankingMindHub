@@ -1,5 +1,5 @@
 ﻿using HomeBankingMindHub.Models;
-using HomeBankingMindHub.Models.Classes;
+using HomeBankingMindHub.Models.Entities;
 using HomeBankingMindHub.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -11,6 +11,16 @@ namespace HomeBankingMindHub.Repositories.Implemetation
     {
         public ClientRepository(HomeBankingContext repositoryContext) : base(repositoryContext){}
 
+
+        public Client FindByEmail(string email)
+        {
+            return FindByCondition(client => client.Email.ToUpper() == email.ToUpper())
+            .Include(client => client.Accounts)
+            .Include(client => client.ClientLoan)
+                .ThenInclude(cl => cl.Loan)
+            .Include(client => client.Cards)
+            .FirstOrDefault();
+        }
         public Client FindById(long id)
         {
             return FindByCondition(client => client.Id == id)
