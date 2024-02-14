@@ -1,6 +1,7 @@
 using HomeBankingMindHub.Models;
 using HomeBankingMindHub.Repositories.Implemetation;
 using HomeBankingMindHub.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,22 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//autenticación
+
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+      .AddCookie(options =>
+      {
+          options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+          options.LoginPath = new PathString("/index.html");
+      });
+
+//autorización
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ClientOnly", policy => policy.RequireClaim("Client"));
+});
 
 // Add DbContext to the container.
 builder.Services.AddDbContext<HomeBankingContext>(options =>
@@ -62,6 +79,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseDefaultFiles();
