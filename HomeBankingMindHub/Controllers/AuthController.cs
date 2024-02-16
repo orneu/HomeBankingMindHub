@@ -13,6 +13,7 @@ using HomeBankingMindHub.DTOs;
 using HomeBankingMindHub.Models.Entities;
 using HomeBankingMindHub.Repositories.Interfaces;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
 
 namespace HomeBankingMindHub.Controllers
 {
@@ -33,15 +34,21 @@ namespace HomeBankingMindHub.Controllers
         {
             try
             {
-                Client user = _clientRepository.FindByEmail(client.Email);
-                if (user == null || !String.Equals(user.Password, client.Password))
-                    return StatusCode(400, "Credenciales invalidas, por favor intente nuevamente");
-
-                if (user.Password.IsNullOrEmpty())
+                if (client.Password.IsNullOrEmpty())
                     return StatusCode(400, "Por favor completar el campo de la clave");
 
-                if (user.Email.IsNullOrEmpty())
+                if (client.Email.IsNullOrEmpty())
                     return StatusCode(400, "Por favor completar el campo de mail");
+
+                Client user = _clientRepository.FindByEmail(client.Email);
+                if (user == null)
+                    return StatusCode(400, "Credenciales invalidas, por favor intente nuevamente");
+
+                PasswordHasher<Client> passwordHasher = new();
+                Console.WriteLine(passwordHasher.VerifyHashedPassword(user, user.Password, client.Password));
+
+                if (passwordHasher.VerifyHashedPassword(user, user.Password, client.Password) == PasswordVerificationResult.Failed)
+                    return StatusCode(400, "Credenciales invalidas, por favor intente nuevamente");
 
                 var claims = new List<Claim>
                 {
