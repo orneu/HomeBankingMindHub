@@ -9,6 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HomeBankingMindHub.DTOs;
+using HomeBankingMindHub.Repositories.Implemetation;
+using System.Diagnostics.Eventing.Reader;
+using Humanizer;
+using System.Collections.ObjectModel;
+using Microsoft.AspNetCore.Identity;
 
 namespace HomeBankingMindHub.Controllers
 {
@@ -17,9 +22,13 @@ namespace HomeBankingMindHub.Controllers
     public class ClientsController : ControllerBase
     {
         private IClientRepository _clientRepository;
-        public ClientsController(IClientRepository clientRepository)
+        private IAccountRepository _accountRepository;
+        private CardColor cardColorAux;
+
+        public ClientsController(IClientRepository clientRepository, IAccountRepository accountRepository)
         {
             _clientRepository = clientRepository;
+            _accountRepository = accountRepository;
         }
 
         [HttpGet]
@@ -158,11 +167,12 @@ namespace HomeBankingMindHub.Controllers
                 {
                     return StatusCode(403, "Email está en uso");
                 }
-
+                PasswordHasher<Client> passwordHasher = new PasswordHasher<Client>();
+                string hashedPassword = passwordHasher.HashPassword(user, client.Password);
                 Client newClient = new Client
                 {
                     Email = client.Email,
-                    Password = client.Password,
+                    Password = hashedPassword,
                     FirstName = client.FirstName,
                     LastName = client.LastName,
                 };
@@ -180,36 +190,40 @@ namespace HomeBankingMindHub.Controllers
 
 
 
-        [HttpPost]
-        public IActionResult Post(ClientFormDTO clientForm)
-        {
-            try
-            {
+        //[HttpPost]
+        //public IActionResult Post(ClientFormDTO clientForm)
+        //{
+        //    try
+        //    {
 
-                Client client = new Client();
+        //        Client client = new Client();
 
-                client.FirstName = clientForm.FirstName;
-                client.LastName = clientForm.LastName;
-                client.Email = clientForm.Email;
+        //        client.FirstName = clientForm.FirstName;
+        //        client.LastName = clientForm.LastName;
+        //        client.Email = clientForm.Email;
 
-                _clientRepository.Save(client);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
+        //        _clientRepository.Save(client);
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, ex.Message);
+        //    }
+        //}
 
-            [HttpGet("current")]
+
+
+
+
+        [HttpGet("current")]
         public IActionResult GetCurrent()
         {
             try
             {
                 string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
-                if (email == string.Empty) 
-                { 
-                    return StatusCode(401,"Unauthorized");
+                if (email == string.Empty)
+                {
+                    return StatusCode(401, "Unauthorized");
                 }
 
                 Client client = _clientRepository.FindByEmail(email);
@@ -250,7 +264,7 @@ namespace HomeBankingMindHub.Controllers
                         FromDate = c.FromDate,
                         Number = c.Number,
                         ThruDate = c.ThruDate
-                       
+
                     }).ToList()
                 };
 
@@ -262,8 +276,177 @@ namespace HomeBankingMindHub.Controllers
             }
         }
 
- 
+        [HttpPost("current/accounts")]
+        public IActionResult PostAccounts()
+        {
+            try
+            {
+                string authUser = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
+                if (authUser == string.Empty)
+                {
+                    return StatusCode(401, "Unauthorized");
+                }
 
+                Client client = _clientRepository.FindByEmail(authUser);
 
+                if (client == null)
+                {
+                    return StatusCode(401, "Unauthorized");
+                }
+
+                Random rand = new Random();
+                int[] randomAccountNumber = new int[8];
+                for (int i = 0; i < 8; i++)
+                {
+                    randomAccountNumber[i] = rand.Next(10);
+                }
+
+                IEnumerable<Account> accounts = _accountRepository.GetAccountsByClient(client.Id);
+                if(accounts.Count() >= 3) {
+                    return Forbid();
+                }
+
+                Account account = new()
+                {
+                    Number = "VIN" + string.Join("",randomAccountNumber),
+                    CreationDate = DateTime.Now,
+                    ClientId = client.Id,
+                    Balance = 0
+                };
+                this._accountRepository.Save(account);
+                return Created("Nueva cuenta creada",account);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+        [HttpGet("current/accounts")]
+        public IActionResult GetAccounts()
+        {
+            try
+            {
+                string authUser = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
+                if (authUser == string.Empty)
+                {
+                    return StatusCode(401, "Unauthorized");
+                }
+
+                Client client = _clientRepository.FindByEmail(authUser);
+
+                if (client == null)
+                {
+                    return StatusCode(401, "Unauthorized");
+                }
+                //var userId = User.Claims.FirstOrDefault(c => c.Type == "Id");
+                IEnumerable<Account> accounts = _accountRepository.FindAllById(client.Id);
+
+                return Ok(accounts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+        [HttpPost("current/cards")]
+        public IActionResult Post([FromBody] CardFormDTO cardFormDTO)
+        {
+            try
+            {
+                string authUser = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
+                if (authUser == string.Empty)
+                {
+                    return StatusCode(401, "Unauthorized");
+                }
+
+                Client client = _clientRepository.FindByEmail(authUser);
+
+                if (client == null)
+                {
+                    return StatusCode(401, "Unauthorized");
+                }
+                ICollection<Card> cards = client.Cards;
+                if (cards.Count >= 6) return Forbid("Ya posee el maximo permitido de tarjetas.");
+                
+                var cardAlredyExist = cards.FirstOrDefault(c => cardFormDTO.Type.ToUpper().Equals(c.Type.ToString()) && cardFormDTO.Color.ToUpper().Equals(c.Color.ToString()));
+                if (cardAlredyExist != default) return Forbid("Usted ya posee una tarjeta con estas caracteristicas.");
+
+                if (cardFormDTO.Color.ToUpper().Equals(CardColor.GOLD.ToString())) { 
+                    cardColorAux = CardColor.GOLD;
+                }
+                if (cardFormDTO.Color.ToUpper().Equals(CardColor.SILVER.ToString()))
+                {
+                    cardColorAux = CardColor.SILVER;
+                }
+                if (cardFormDTO.Color.ToUpper().Equals(CardColor.TITANIUM.ToString()))
+                {
+                    cardColorAux = CardColor.TITANIUM;
+                }
+
+                Random rand = new Random();
+                string randomCardNumber = "";
+                for (int i = 0; i < 4; i++)
+                {
+                    randomCardNumber += (1000 + rand.Next(8999));
+                    if(i == 3) { break; }
+
+                    randomCardNumber += "-";
+                }
+                Card card = new()
+                {
+                    ClientId = client.Id,
+                    CardHolder = client.FirstName + " " + client.LastName,
+                    Type = cardFormDTO.Type.ToUpper().Equals(CardType.DEBIT.ToString()) ? CardType.DEBIT : CardType.CREDIT,
+                    Color = cardColorAux,
+                    Number = randomCardNumber,
+                    Cvv = 100 + rand.Next(899),
+                    FromDate = DateTime.Now,
+                    ThruDate = DateTime.Now.AddYears(4),
+                };
+                client.Cards.Add(card);
+
+                _clientRepository.Change(client);
+                
+                //var userId = User.Claims.FirstOrDefault(c => c.Type == "Id");
+
+                return Ok(card);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+        [HttpGet("current/cards")]
+        public IActionResult GetCards()
+        {
+            try
+            {
+                string authUser = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
+                if (authUser == string.Empty)
+                {
+                    return StatusCode(401, "Unauthorized");
+                }
+
+                Client client = _clientRepository.FindByEmail(authUser);
+
+                if (client == null)
+                {
+                    return StatusCode(401, "Unauthorized");
+                }
+                //var userId = User.Claims.FirstOrDefault(c => c.Type == "Id");
+                ICollection<Card> cards = client.Cards;
+
+                return Ok(cards);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
     }
 }
+

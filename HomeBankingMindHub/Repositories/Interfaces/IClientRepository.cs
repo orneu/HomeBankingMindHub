@@ -6,6 +6,7 @@ namespace HomeBankingMindHub.Repositories.Interfaces
     {
         IEnumerable<Client> GetAllClients();
         void Save(Client client);
+        void Change(Client client);
         Client FindById(long id);
         Client FindByEmail(string email);
     }

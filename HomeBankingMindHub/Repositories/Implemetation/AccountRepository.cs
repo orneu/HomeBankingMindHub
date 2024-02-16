@@ -13,9 +13,18 @@ namespace HomeBankingMindHub.Repositories.Implemetation
 
             public Account FindById(long id)
             {
+          
                 return FindByCondition(account => account.Id == id)
                     .Include(account => account.Transactions)
                     .FirstOrDefault();
+            }  
+        public IEnumerable<Account> FindAllById(long id)
+            {
+
+            return FindByCondition(account => account.Id == id)
+                .Include(account => account.Id)
+                .ToList();
+
             }
 
             public IEnumerable<Account> GetAllAccounts()
@@ -30,7 +39,20 @@ namespace HomeBankingMindHub.Repositories.Implemetation
                 Create(account);
                 SaveChanges();
             }
-        }
+
+
+            public IEnumerable<Account> GetAccountsByClient(long clientId)
+
+            {
+
+                return FindByCondition(account => account.ClientId == clientId)
+
+                .Include(account => account.Transactions)
+
+                .ToList();
+
+            }
+    }
 
     }
 

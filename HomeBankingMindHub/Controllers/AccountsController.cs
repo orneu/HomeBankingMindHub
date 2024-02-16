@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using HomeBankingMindHub.Repositories.Implemetation;
 
 namespace HomeBankingMindHub.Controllers
 {
@@ -64,7 +65,9 @@ namespace HomeBankingMindHub.Controllers
 
             }
 
-            [HttpGet("{id}")]
+
+
+        [HttpGet("{id}")]
             public IActionResult Get(long id)
             {
                 try
