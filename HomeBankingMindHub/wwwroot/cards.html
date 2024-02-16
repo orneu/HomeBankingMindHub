@@ -46,17 +46,25 @@
                                     Cards
                                 </a>
                             </li>
+                            <li class="nav nav-pills flex-column mb-auto">
+                                <button class="btn btn-danger img-fluid" v-on:click="signOut">Sign out</button>
+                            </li>
                         </ul>
                         <hr>
-                        <ul class="nav nav-pills flex-column mb-auto">
-                            <button class="btn btn-danger img-fluid" v-on:click="signOut">Sign out</button>
-                        </ul>
+
                     </div>
                 </div>
                 <div class="col">
                     <div class="row">
                         <div class="col">
                             <h1 class="display-1">{{ clientInfo.firstName }} {{ clientInfo.lastName }}</h1>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col" v-if="clientInfo.cards != null && false < 6">
+                            <h2 class="display-6">Create new card</h2>
+                            <a v-if="clientInfo.cards != null && clientInfo.cards.length < 6" href="create-cards.html" id="create" class="btn btn-sm btn-outline-success">Create</a>
+                            <span class="small" v-if="debitCards.length <= 0">No debit cards</span>
                         </div>
                     </div>
                     <div class="row mt-3">
@@ -71,8 +79,7 @@
                                 <div class="plastic-card__square">
                                     <span class="plastic-card__label">{{ card.type}} {{ card.color }}</span>
                                 </div>
-                                <img class="plastic-card__front-logo plastic-card__logo"
-                                     src="img/logo vinotinto.png">
+                                <img class="plastic-card__front-logo plastic-card__logo" src="img/logo vinotinto.png">
                                 <p class="plastic-card_numer">{{ card.number}}</p>
                                 <div class="plastic-card__space-60">
                                     <span class="plastic-card__label">card holder</span>

@@ -4,9 +4,9 @@
     box-shadow: 1px 1px 5px black;
 }
 
-    .account:hover {
+.account:hover {
         box-shadow: 2px 2px 10px black;
-    }
+}
 
 .account-details-header {
     background: linear-gradient(45deg,#ee0979,#ff6a00);
@@ -20,6 +20,14 @@
 
 .account-link {
     text-decoration: none;
+}
+
+.subtitle {
+    display: inline;
+}
+
+#create {
+    margin-bottom: 15px;
 }
 
 .credit-transaction {

@@ -45,9 +45,11 @@
                             </li>
                         </ul>
                         <hr>
-                        <ul class="nav nav-pills flex-column mb-auto">
-                            <button class="btn btn-danger img-fluid" v-on:click="signOut">Sign out</button>
-                        </ul>
+                        <li class="nav nav-pills flex-column mb-auto">
+                            <button class="btn btn-danger img-fluid">Sign out</button>
+                            <!--comente este boton para que no tire el warning el consola por no existir la fun signOut-->
+                            <!--  <button class="btn btn-danger img-fluid"  v-on:click="signOut">Sign out</button>-->
+                        </li>
                     </div>
                 </div>
                 <div class="col">
@@ -58,6 +60,7 @@
                     </div>
                     <div class="row mt-3">
                         <div class="col">
+                            <!--<div v-if="accountInfo"></div>-->
                             <h2 class="display-6 account">Account Number: {{ accountInfo.number }} - Balance: ${{ accountInfo.balance }}</h2>
                         </div>
                     </div>

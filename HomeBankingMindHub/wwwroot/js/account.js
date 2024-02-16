@@ -21,6 +21,9 @@ var app = new Vue({
         },
         formatDate: function (date) {
             return new Date(date).toLocaleDateString('en-gb');
+        },
+        log(any) {
+            console.log(any)
         }
     },
     mounted: function () {
