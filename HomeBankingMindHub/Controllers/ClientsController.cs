@@ -187,34 +187,6 @@ namespace HomeBankingMindHub.Controllers
             }
         }
 
-
-
-
-        //[HttpPost]
-        //public IActionResult Post(ClientFormDTO clientForm)
-        //{
-        //    try
-        //    {
-
-        //        Client client = new Client();
-
-        //        client.FirstName = clientForm.FirstName;
-        //        client.LastName = clientForm.LastName;
-        //        client.Email = clientForm.Email;
-
-        //        _clientRepository.Save(client);
-        //        return Ok();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, ex.Message);
-        //    }
-        //}
-
-
-
-
-
         [HttpGet("current")]
         public IActionResult GetCurrent()
         {
@@ -339,7 +311,6 @@ namespace HomeBankingMindHub.Controllers
                 {
                     return StatusCode(401, "Unauthorized");
                 }
-                //var userId = User.Claims.FirstOrDefault(c => c.Type == "Id");
                 IEnumerable<Account> accounts = _accountRepository.FindAllById(client.Id);
 
                 return Ok(accounts);
@@ -408,8 +379,6 @@ namespace HomeBankingMindHub.Controllers
                 client.Cards.Add(card);
 
                 _clientRepository.Change(client);
-                
-                //var userId = User.Claims.FirstOrDefault(c => c.Type == "Id");
 
                 return Ok(card);
             }
@@ -436,7 +405,6 @@ namespace HomeBankingMindHub.Controllers
                 {
                     return StatusCode(401, "Unauthorized");
                 }
-                //var userId = User.Claims.FirstOrDefault(c => c.Type == "Id");
                 ICollection<Card> cards = client.Cards;
 
                 return Ok(cards);

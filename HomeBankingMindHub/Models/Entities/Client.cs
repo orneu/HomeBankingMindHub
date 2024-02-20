@@ -10,5 +10,6 @@
         public ICollection<Account> Accounts { get; set; }
         public ICollection<ClientLoan> ClientLoan { get; set; }
         public ICollection<Card> Cards { get; set; }
+        public ICollection<Transaction> Transactions { get; set; }
     }
 }

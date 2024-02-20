@@ -1,5 +1,7 @@
 ﻿using HomeBankingMindHub.Models.Entities;
 using HomeBankingMindHub.Models.ENUM;
+using Microsoft.AspNetCore.Identity;
+using System.Net;
 
 namespace HomeBankingMindHub.Models
 {
@@ -9,9 +11,13 @@ namespace HomeBankingMindHub.Models
         {
             if (!context.Clients.Any())
             {
+                PasswordHasher<Client> passwordHasher = new(); 
+
+                Client client = new();
+                string hashedPassword = passwordHasher.HashPassword(client, "123456");
                 var clients = new Client[]
                 {
-                   new Client { Email = "ornellajazminpacino@gmail.com", FirstName = "Ornella", LastName = "Pacino", Password = "123456" }
+                new Client { Email = "ornellajazminpacino@gmail.com", FirstName = "Ornella", LastName = "Pacino", Password = hashedPassword }
                 };
 
                 context.Clients.AddRange(clients);
