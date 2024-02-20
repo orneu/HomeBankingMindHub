@@ -36,6 +36,8 @@ builder.Services.AddScoped<IClientRepository, ClientRepository>();
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
+builder.Services.AddScoped <ITransactionRepository, TransactionRepository>();
+
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
