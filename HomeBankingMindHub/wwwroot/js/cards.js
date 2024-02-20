@@ -20,6 +20,9 @@
                 })
                 .catch(function (error) {
                     // handle error
+                    if (error.response.status === 401) {
+                        window.location.href = 'index.html'
+                    }
                     this.errorMsg = "Error getting data";
                     this.errorToats.show();
                 })

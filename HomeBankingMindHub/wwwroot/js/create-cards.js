@@ -41,6 +41,10 @@ var app = new Vue({
                 })
                     .then(() => { window.location.href = "/cards.html" })
                     .catch((error) => {
+                        if (error.response.status === 401) {
+                            window.location.href = 'index.html'
+                        }
+                        console.log(error.response.data)
                         this.errorMsg = error.data
                         this.errorToats.show();
                     })

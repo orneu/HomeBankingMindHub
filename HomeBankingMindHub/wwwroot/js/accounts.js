@@ -17,6 +17,10 @@ var app = new Vue({
                 .catch(function (error) {
                     // handle error
                     //app.error = error;
+                    if (error.response.status === 401) {
+                        window.location.href = 'index.html'
+                    }
+                    console.log(error.response)
                     this.errorMsg = "Error getting data";
                     this.errorToats.show();
                 })
