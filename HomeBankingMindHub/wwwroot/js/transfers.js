@@ -18,8 +18,6 @@ var app = new Vue({
             .then((response) => {
                 //get client ifo
                 app.clientAccounts = response.data;
-                console.log(response.data);
-                console.log(app.clientAccounts);
             })
                 .catch((error) => {
                     if (error.response.status === 401) {
