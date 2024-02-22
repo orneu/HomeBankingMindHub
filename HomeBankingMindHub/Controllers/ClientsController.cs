@@ -64,7 +64,7 @@ namespace HomeBankingMindHub.Controllers
                             LoanId = cl.LoanId,
                             Name = cl.Loan.Name,
                             Amount = cl.Amount,
-                            Payments = int.Parse(cl.Payments)
+                            Payments = int.Parse(cl.Payments).ToString(),
                         }).ToList(),
 
                         Cards = client.Cards.Select(c => new CardDTO
@@ -127,7 +127,7 @@ namespace HomeBankingMindHub.Controllers
                         LoanId = cl.LoanId,
                         Name = cl.Loan.Name,
                         Amount = cl.Amount,
-                        Payments = int.Parse(cl.Payments)
+                        Payments = int.Parse(cl.Payments).ToString(),
                     }).ToList(),
 
                     Cards = client.Cards.Select(c => new CardDTO
@@ -224,7 +224,7 @@ namespace HomeBankingMindHub.Controllers
                         LoanId = cl.LoanId,
                         Name = cl.Loan.Name,
                         Amount = cl.Amount,
-                        Payments = int.Parse(cl.Payments)
+                        Payments = int.Parse(cl.Payments).ToString(),
                     }).ToList(),
                     Cards = client.Cards.Select(c => new CardDTO
                     {

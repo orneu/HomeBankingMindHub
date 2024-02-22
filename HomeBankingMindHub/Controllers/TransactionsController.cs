@@ -74,7 +74,7 @@ namespace HomeBankingMindHub.Controllers
                 }
 
                 //buscamos las cuentas
-                Account fromAccount = _accountRepository.FinByNumber(transferDTO.FromAccountNumber);
+                Account fromAccount = _accountRepository.FindByNumber(transferDTO.FromAccountNumber);
                 if (fromAccount == null)
                 {
                     return StatusCode(403, "Cuenta de origen no existe");
@@ -87,7 +87,7 @@ namespace HomeBankingMindHub.Controllers
                 }
 
                 //buscamos la cuenta de destino
-                Account toAccount = _accountRepository.FinByNumber(transferDTO.ToAccountNumber);
+                Account toAccount = _accountRepository.FindByNumber(transferDTO.ToAccountNumber);
                 if (toAccount == null)
                 {
                     return StatusCode(403, "Cuenta de destino no existe");
