@@ -9,7 +9,7 @@ namespace HomeBankingMindHub.Repositories.Interfaces
         IEnumerable<Account> FindAllById(long id);
         void Save(Account account);
         IEnumerable<Account> GetAccountsByClient(long clientId);
-        Account FinByNumber(string number);
+        Account FindByNumber(string number);
 
     }
 }
