@@ -6,7 +6,7 @@ namespace HomeBankingMindHub.Repositories.Interfaces
     {
         IEnumerable<Loan> GetAllLoans();
         Loan FindById(long id);
-        IEnumerable<Loan> FindAllById(long id);
+        IEnumerable<Loan> FindAll();
 
     }
 }

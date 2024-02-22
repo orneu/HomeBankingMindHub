@@ -48,7 +48,7 @@ namespace HomeBankingMindHub.Controllers
                 {
                     return StatusCode(401, "Unauthorized");
                 }
-                IEnumerable<Loan> loans =  _loanRepository.GetAllLoans();
+                List<Loan> loans =  _loanRepository.FindAll().ToList();
             return Ok(loans);
 
             }catch(Exception ex)
@@ -77,9 +77,12 @@ namespace HomeBankingMindHub.Controllers
                 }
 
                 //verifica que no exista ese prestamo
-                var loan = _loanRepository.FindById(loanApplicationDTO.Id);
+                Loan loan = _loanRepository.FindById(loanApplicationDTO.LoanId);
 
-                if (loan == null) return StatusCode(403, "No existe ese prestamo"); 
+                if (loan == null)
+                {
+                    return StatusCode(403, "No existe ese prestamo");
+                }
 
                 //Verifica que no sobrepase el máximo autorizado.
                 if (loanApplicationDTO.Amount > loan.MaxAmount) {
@@ -99,16 +102,16 @@ namespace HomeBankingMindHub.Controllers
                     return StatusCode(406, "Seleccione un monto de pagos correcto");
                 }
 
-                
+
 
                 _clientLoanRepository.Save(new ClientLoan
                 {
-                    Id = client.ClientLoan.Count()+1,
-                    LoanId = loanApplicationDTO.Id,
+                    LoanId = loanApplicationDTO.LoanId,
                     Amount = loanApplicationDTO.Amount * 1.20,
                     Payments = loanApplicationDTO.Payments,
+                    ClientId = client.Id
                 }
-                    );
+                    ) ;
 
                 _transactionRepository.Save(new Transaction
                 {

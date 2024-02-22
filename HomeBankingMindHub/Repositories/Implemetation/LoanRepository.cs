@@ -13,7 +13,7 @@ namespace HomeBankingMindHub.Repositories.Implemetation
         public LoanRepository(HomeBankingContext repositoryContext) : base(repositoryContext) { }
         public IEnumerable<Loan> GetAllLoans()
         {
-            return FindAll().ToList();
+            return base.FindAll().ToList();
         }
 
         public Loan FindById(long id)
@@ -21,9 +21,9 @@ namespace HomeBankingMindHub.Repositories.Implemetation
             return FindByCondition(loan => loan.Id == id).FirstOrDefault();
         }
 
-        public IEnumerable<Loan> FindAllById(long id)
+        public IEnumerable<Loan> FindAll()
         {
-            return FindByCondition(loan => loan.Id == id).ToList();
+            return base.FindAll().ToList();
         }
 
     }
