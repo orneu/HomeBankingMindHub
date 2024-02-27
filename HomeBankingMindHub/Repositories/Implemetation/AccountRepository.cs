@@ -65,8 +65,8 @@ namespace HomeBankingMindHub.Repositories.Implemetation
                 .Include(account => account.Transactions)
                 .FirstOrDefault();
             }
-           
 
+        
 
     }
 

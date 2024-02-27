@@ -1,4 +1,7 @@
-﻿namespace HomeBankingMindHub.Models.Entities
+﻿using HomeBankingMindHub.Repositories.Interfaces;
+using HomeBankingMindHub.Repositories.Implemetation;
+
+namespace HomeBankingMindHub.Models.Entities
 {
     public class Account
     {
@@ -9,5 +12,24 @@
         public Client Client { get; set; }
         public long ClientId { get; set; }
         public ICollection<Transaction> Transactions { get; set; }
+
+        public int[] RandomAccountNumber()
+        {
+            Random rand = new Random();
+            int[] randomAccountNumber = new int[8];
+            for (int i = 0; i < 8; i++)
+            {
+                randomAccountNumber[i] = rand.Next(10);
+            }
+            return randomAccountNumber;
+        }
+
+        public Account(Client client)
+        {
+            Number = "VIN" + string.Join("", RandomAccountNumber);
+            CreationDate = DateTime.Now;
+            ClientId = client.Id;
+            Balance = 0;
+        }
     }
 }
