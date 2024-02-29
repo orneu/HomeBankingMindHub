@@ -1,5 +1,6 @@
 ﻿using HomeBankingMindHub.Repositories.Interfaces;
 using HomeBankingMindHub.Repositories.Implemetation;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HomeBankingMindHub.Models.Entities
 {
@@ -26,10 +27,18 @@ namespace HomeBankingMindHub.Models.Entities
 
         public Account(Client client)
         {
-            Number = "VIN" + string.Join("", RandomAccountNumber);
+            Number = "VIN" + string.Join("", RandomAccountNumber());
             CreationDate = DateTime.Now;
             ClientId = client.Id;
             Balance = 0;
         }
-    }
+        public Account(long clientId, DateTime creationDate, string number, double balance)
+        {
+            Number = number;
+            CreationDate = creationDate;
+            ClientId = clientId;
+            Balance = balance;
+           
+        }
+}
 }

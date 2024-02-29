@@ -2,6 +2,7 @@ using HomeBankingMindHub.Models;
 using HomeBankingMindHub.Repositories.Implemetation;
 using HomeBankingMindHub.Repositories.Interfaces;
 using HomeBankingMindHub.Services;
+using HomeBankingMindHub.Services.Impl;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddScoped<IClientService, IClientService>();
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ILoanService, LoanService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+
 
 //Swagger
 builder.Services.AddEndpointsApiExplorer();

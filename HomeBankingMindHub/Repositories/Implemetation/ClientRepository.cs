@@ -17,7 +17,7 @@ namespace HomeBankingMindHub.Repositories.Implemetation
             return FindByCondition(client => client.Email.ToUpper() == email.ToUpper())
             .Include(client => client.Accounts)
             .Include(client => client.ClientLoan)
-                .ThenInclude(cl => cl.Loan)
+            .ThenInclude(client => client.Loan)
             .Include(client => client.Cards)
             .FirstOrDefault();
         }
@@ -26,7 +26,7 @@ namespace HomeBankingMindHub.Repositories.Implemetation
             return FindByCondition(client => client.Id == id)
                 .Include(client => client.Accounts)
                 .Include(client => client.ClientLoan)
-                .ThenInclude(cl => cl.Loan)
+                .ThenInclude(client => client.Loan)
                 .Include(client => client.Cards)
 
 
@@ -38,7 +38,7 @@ namespace HomeBankingMindHub.Repositories.Implemetation
             return FindAll()
                 .Include(client => client.Accounts)
                 .Include(client => client.ClientLoan)
-                .ThenInclude(cl => cl.Loan)
+                .ThenInclude(client => client.Loan)
                 .ToList();
         }
 

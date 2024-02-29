@@ -22,8 +22,8 @@ namespace HomeBankingMindHub.Models.DTOs
             LastName = client.LastName;
             Email = client.Email;
             Accounts = client.Accounts.Select(ac => new AccountDTO(ac)).ToList();
-            Cards = client.Cards.Select(c => new CardDTO(c)).ToList();
             Credits = client.ClientLoan.Select(cl => new ClientLoanDTO(cl)).ToList();
+            Cards = client.Cards.Select(c => new CardDTO(c)).ToList();
         }
     }
 

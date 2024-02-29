@@ -2,6 +2,8 @@
 using HomeBankingMindHub.Models.Entities;
 using HomeBankingMindHub.Models;
 using HomeBankingMindHub.Repositories.Interfaces;
+using HomeBankingMindHub.Services;
+using HomeBankingMindHub.Services.Impl;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -15,89 +17,35 @@ namespace HomeBankingMindHub.Controllers
         [ApiController]
         public class AccountsController : ControllerBase
         {
-        private IAccountRepository _accountRepository;
-            public AccountsController(IAccountRepository accountRepository)
+        private IAccountService _accountService;
+            public AccountsController(IAccountService accountService)
             {
-                _accountRepository = accountRepository;
+                _accountService = accountService;
             }
-
 
         [HttpGet]
             public IActionResult Get()
             {
                 try
                 {
-                    var accounts = _accountRepository.GetAllAccounts();
-                    var accountsDTO = new List<AccountDTO>();
-
-                    foreach (Account account in accounts)
-                    {
-                        var newAccountDTO = new AccountDTO
-
-                        {
-                            Id = account.Id,
-                            Number = account.Number,
-                            CreationDate = account.CreationDate,
-                            Balance =account.Balance ,
-                            Transactions = account.Transactions.Select(tr => new TransactionDTO
-
-                            {
-                                Id = tr.Id,
-                                Type = tr.Type.ToString(),
-                                Amount = tr.Amount,
-                                Description = tr.Description,
-                                Date = tr.Date,
-
-                            }).ToList()
-
-                        };
-                        accountsDTO.Add(newAccountDTO);
-                    }
-                    return Ok(accountsDTO);
-
+                return Ok(_accountService.getAllAccounts());
                 }
                 catch (Exception ex)
                 {
-
                     return StatusCode(500, ex.Message);
-
                 }
-
             }
-
-
 
         [HttpGet("{id}")]
             public IActionResult Get(long id)
             {
                 try
                 {
-                    var account = _accountRepository.FindById(id);
-
-                    if (account == null)
-
+                    var accountDTO = _accountService.findById(id);
+                    if (accountDTO == null)
                     {
-                        return Forbid();
+                        return StatusCode(403, "No existe la cuenta");
                     }
-                    var accountDTO = new AccountDTO
-
-                    {
-                        Id = account.Id,
-                        Number = account.Number,
-                        CreationDate = account.CreationDate,
-                        Balance = account.Balance,
-                        Transactions = account.Transactions.Select(tr => new TransactionDTO
-
-                        {
-                            Id = tr.Id,
-                            Type = tr.Type.ToString(),
-                            Amount = tr.Amount,
-                            Description = tr.Description,
-                            Date = tr.Date,
-                            
-
-                        }).ToList()
-                    };
                     return Ok(accountDTO);
                 }
                 catch (Exception ex)

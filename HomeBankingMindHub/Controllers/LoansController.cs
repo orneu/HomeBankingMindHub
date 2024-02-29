@@ -15,6 +15,8 @@ using Humanizer;
 using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using HomeBankingMindHub.Services;
+using HomeBankingMindHub.Services.Impl;
 
 namespace HomeBankingMindHub.Controllers
 {
@@ -22,20 +24,12 @@ namespace HomeBankingMindHub.Controllers
     [ApiController]
     public class LoansController : ControllerBase
     {
-        private IClientRepository _clientRepository;
-        private ILoanRepository _loanRepository;
-        private IAccountRepository _accountRepository;
-        private ITransactionRepository _transactionRepository;
-        private IClientLoanRepository _clientLoanRepository;
+        private readonly ILoanService _loanService;
 
 
-        public LoansController(IClientRepository clientRepository, ILoanRepository loanRepository, IAccountRepository accountRepository, ITransactionRepository transactionRepository,IClientLoanRepository clientLoanRepository)
+        public LoansController(ILoanService loanService)
         {
-            _clientRepository = clientRepository;
-            _accountRepository = accountRepository;
-            _loanRepository = loanRepository;
-            _transactionRepository = transactionRepository;
-            _clientLoanRepository = clientLoanRepository;
+            _loanService = loanService;
 
         }
         [HttpGet]
@@ -48,8 +42,7 @@ namespace HomeBankingMindHub.Controllers
                 {
                     return StatusCode(401, "Unauthorized");
                 }
-                List<Loan> loans =  _loanRepository.FindAll().ToList();
-            return Ok(loans);
+                return Ok(_loanService.findAll());
 
             }catch(Exception ex)
             {
@@ -67,8 +60,8 @@ namespace HomeBankingMindHub.Controllers
                 {
                     return StatusCode(401, "Unauthorized");
                 }
-                Client client = _clientRepository.FindByEmail(authUser);
 
+                Client client = _loanService.findByEmail(authUser);
 
                 //verifica que el monto NO sea menor a 0 
                 if (loanApplicationDTO.Amount <= 0)
@@ -77,7 +70,7 @@ namespace HomeBankingMindHub.Controllers
                 }
 
                 //verifica que no exista ese prestamo
-                Loan loan = _loanRepository.FindById(loanApplicationDTO.LoanId);
+                Loan loan = _loanService.findById(loanApplicationDTO.LoanId);
 
                 if (loan == null)
                 {
@@ -89,9 +82,8 @@ namespace HomeBankingMindHub.Controllers
                     return StatusCode(403, "Ingrese un monto que no supere el maximo autorizado");
                 }
 
-
                 // valida que exista la cuenta destino
-                var account = _accountRepository.FindByNumber(loanApplicationDTO.ToAccountNumber);
+                var account = _loanService.findByNumber(loanApplicationDTO.ToAccountNumber);
                 if (account == null)
                 {return StatusCode(403, "No existe la cuenta destino");
                 }
@@ -102,9 +94,7 @@ namespace HomeBankingMindHub.Controllers
                     return StatusCode(406, "Seleccione un monto de pagos correcto");
                 }
 
-
-
-                _clientLoanRepository.Save(new ClientLoan
+                _loanService.save(new ClientLoan
                 {
                     LoanId = loanApplicationDTO.LoanId,
                     Amount = loanApplicationDTO.Amount * 1.20,
@@ -113,7 +103,7 @@ namespace HomeBankingMindHub.Controllers
                 }
                     ) ;
 
-                _transactionRepository.Save(new Transaction
+                _loanService.save(new Transaction
                 {
                     Type = TransactionType.CREDIT,
                     Amount = loanApplicationDTO.Amount,
@@ -124,7 +114,7 @@ namespace HomeBankingMindHub.Controllers
 
                 account.Balance += loanApplicationDTO.Amount;
 
-                _accountRepository.Save(account);
+                _loanService.save(account);
 
                 return Ok();
 

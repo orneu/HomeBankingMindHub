@@ -1,18 +1,6 @@
 ﻿using HomeBankingMindHub.Models.Entities;
-using HomeBankingMindHub.Models;
-using HomeBankingMindHub.Models.ENUM;
 using HomeBankingMindHub.Models.DTOs;
-using HomeBankingMindHub.Repositories.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using HomeBankingMindHub.DTOs;
-using HomeBankingMindHub.Repositories.Implemetation;
-using System.Diagnostics.Eventing.Reader;
-using Humanizer;
-using System.Collections.ObjectModel;
 using Microsoft.AspNetCore.Identity;
 using HomeBankingMindHub.Services;
 
@@ -22,21 +10,20 @@ namespace HomeBankingMindHub.Controllers
     [ApiController]
     public class ClientsController : ControllerBase
     {
-        private IAccountRepository _accountRepository;
-        private readonly IClientService clientService;
-        private CardColor cardColorAux;
+        private readonly IClientService _clientService;
+        
 
-        public ClientsController(IClientService clientService, IAccountRepository accountRepository)
+        public ClientsController(IClientService clientService)
         {
-            _accountRepository = accountRepository;
-         }
+            _clientService = clientService;
+        }
 
         [HttpGet]
         public IActionResult Get()
         {
             try
             {
-                return Ok(clientService.getAllClients);
+                return Ok(_clientService.getAllClients());
             }
             catch (Exception ex)
             {
@@ -53,7 +40,7 @@ namespace HomeBankingMindHub.Controllers
             }
             try
             {
-                ClientDTO clientDTO = clientService.getClientById(id);
+                ClientDTO clientDTO = _clientService.getClientById(id);
                 if (clientDTO == null)
                 {
                     return NotFound();
@@ -76,7 +63,7 @@ namespace HomeBankingMindHub.Controllers
                     return StatusCode(403, "datos inválidos");
 
                 //buscamos si ya existe el usuario
-                Client user = clientService.findByEmail(client.Email);
+                Client user = _clientService.findByEmail(client.Email);
 
                 if (user != null)
                 {
@@ -85,9 +72,15 @@ namespace HomeBankingMindHub.Controllers
 
                 PasswordHasher<Client> passwordHasher = new PasswordHasher<Client>();
                 string hashedPassword = passwordHasher.HashPassword(user, client.Password);
-                Client newClient = new Client();
+                Client newClient = new Client
+                {
+                    Email = client.Email,
+                    Password = hashedPassword,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                };
 
-                clientService.save(newClient);
+                _clientService.save(newClient);
                 return Created("", newClient);
 
             }
@@ -108,7 +101,7 @@ namespace HomeBankingMindHub.Controllers
                     return StatusCode(401, "Unauthorized");
                 }
 
-                Client client = clientService.findByEmail(email);
+                Client client = _clientService.findByEmail(email);
 
                 if (client == null)
                 {
@@ -127,7 +120,7 @@ namespace HomeBankingMindHub.Controllers
         }
 
         [HttpPost("current/accounts")]
-        public IActionResult PostAccounts()
+        public IActionResult CreateAccount()
         {
             try
             {
@@ -137,20 +130,19 @@ namespace HomeBankingMindHub.Controllers
                     return StatusCode(401, "Unauthorized");
                 }
 
-                Client client = clientService.findByEmail(authUser);
+                Client client = _clientService.findByEmail(authUser);
 
                 if (client == null)
                 {
-                    return StatusCode(401, "Unauthorized");
+                    return StatusCode(401, "No existe el cliente");
                 }
 
-                IEnumerable<Account> accounts = _accountRepository.GetAccountsByClient(client.Id);
-                if(accounts.Count() >= 3) {
-                    return Forbid();
+                if ((_clientService.getAllAccounts(client)).Count() >= 3) {
+                    return StatusCode(403, "Limite maximo de cuentas alcanzado");
                 }
 
                 Account account = new(client);
-                this._accountRepository.Save(account);
+                this._clientService.saveAccount(account);
                 return Created("Nueva cuenta creada",account);
             }
             catch (Exception ex)
@@ -170,15 +162,13 @@ namespace HomeBankingMindHub.Controllers
                     return StatusCode(401, "Unauthorized");
                 }
 
-                Client client = clientService.findByEmail(authUser);
+                Client client = _clientService.findByEmail(authUser);
 
                 if (client == null)
                 {
                     return StatusCode(401, "Unauthorized");
                 }
-                IEnumerable<Account> accounts = _accountRepository.FindAllById(client.Id);
-
-                return Ok(accounts);
+                return Ok(_clientService.findAccountById(client.Id));
             }
             catch (Exception ex)
             {
@@ -197,19 +187,21 @@ namespace HomeBankingMindHub.Controllers
                     return StatusCode(401, "Unauthorized");
                 }
 
-                Client client = clientService.findByEmail(authUser);
+                Client client = _clientService.findByEmail(authUser);
                 if (client == null)
                 {
                     return StatusCode(401, "Unauthorized");
                 }
                 ICollection<Card> cards = client.Cards;
-                if (cards.Count >= 6) return Forbid("Ya posee el maximo permitido de tarjetas.");
+                if (cards.Count >= 6) 
+                    return StatusCode(401,"Ya posee el maximo permitido de tarjetas.");
 
                 var cardAlredyExist = cards.FirstOrDefault(c => cardFormDTO.Type.ToUpper().Equals(c.Type.ToString()) && cardFormDTO.Color.ToUpper().Equals(c.Color.ToString()));
                 
-                if (cardAlredyExist != default) return Forbid("Usted ya posee una tarjeta con estas caracteristicas.");
+                if (cardAlredyExist != default)
+                    return StatusCode(401,"Usted ya posee una tarjeta con estas caracteristicas.");
                 
-                return Ok(clientService.createNewCard(client, cardFormDTO, cardColorAux));   
+                return Ok(_clientService.createNewCard(client, cardFormDTO));   
             }
             catch (Exception ex)
             {
@@ -228,7 +220,7 @@ namespace HomeBankingMindHub.Controllers
                     return StatusCode(401, "Unauthorized");
                 }
 
-                Client client = clientService.findByEmail(authUser);
+                Client client = _clientService.findByEmail(authUser);
 
                 if (client == null)
                 {

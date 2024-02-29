@@ -13,9 +13,14 @@ namespace HomeBankingMindHub.Services.Impl
     {
         private readonly IClientRepository _clientRepository;
 
-        public ClientService(IClientRepository clientRepository)
+        private readonly IAccountRepository _accountRepository;
+
+        private CardColor cardColorAux;
+
+        public ClientService(IClientRepository clientRepository, IAccountRepository accountRepository)
         {
             _clientRepository = clientRepository;
+            _accountRepository = accountRepository;
         }
         public List<ClientDTO> getAllClients()
         {
@@ -52,7 +57,7 @@ namespace HomeBankingMindHub.Services.Impl
             _clientRepository.Save(client);
         }
 
-        public Card createNewCard(Client client, CardFormDTO cardFormDTO, CardColor cardColorAux) 
+        public Card createNewCard(Client client, CardFormDTO cardFormDTO) 
             {
             if (cardFormDTO.Color.ToUpper().Equals(CardColor.GOLD.ToString()))
             {
@@ -67,14 +72,50 @@ namespace HomeBankingMindHub.Services.Impl
                 cardColorAux = CardColor.TITANIUM;
             }
 
-            Card card = new(client, cardColorAux, cardFormDTO);
+            //            Card card = new(client, cardColorAux, cardFormDTO);
+
+            Random rand = new Random();
+            string randomCardNumber = "";
+            for (int i = 0; i < 4; i++)
+            {
+                randomCardNumber += (1000 + rand.Next(8999));
+                if (i == 3) { break; }
+
+                randomCardNumber += "-";
+            }
+            Card card = new()
+            {
+                ClientId = client.Id,
+                CardHolder = client.FirstName + " " + client.LastName,
+                Type = cardFormDTO.Type.ToUpper().Equals(CardType.DEBIT.ToString()) ? CardType.DEBIT : CardType.CREDIT,
+                Color = cardColorAux,
+                Number = randomCardNumber,
+                Cvv = 100 + rand.Next(899),
+                FromDate = DateTime.Now,
+                ThruDate = DateTime.Now.AddYears(4),
+            };
+
+
             client.Cards.Add(card);
 
             _clientRepository.Change(client);
 
             return (card);
+            }
+        public IEnumerable<Account> getAllAccounts(Client client) 
+        {
+            IEnumerable<Account> accounts = _accountRepository.GetAccountsByClient(client.Id);
+           return accounts;
         }
 
-        
+        public void saveAccount(Account account) 
+        {
+            this._accountRepository.Save(account);
+        }
+
+        public IEnumerable<Account> findAccountById(long id) {
+            IEnumerable<Account> accounts = _accountRepository.FindAllById(id);
+            return accounts;
+        }
     }
 }

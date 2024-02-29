@@ -10,6 +10,9 @@ namespace HomeBankingMindHub.Services
         ClientDTO getClientById(long id);
         Client findByEmail(string email);
         void save(Client client);
-        Card createNewCard(Client client, CardFormDTO cardFormDTO, CardColor cardColorAux);
+        Card createNewCard(Client client, CardFormDTO cardFormDTO);
+        IEnumerable<Account> getAllAccounts(Client client);
+        void saveAccount(Account account);
+        IEnumerable<Account> findAccountById(long id);
     }
 }

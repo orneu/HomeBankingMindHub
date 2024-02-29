@@ -1,5 +1,6 @@
 ﻿using HomeBankingMindHub.Models.DTOs;
 using HomeBankingMindHub.Models.ENUM;
+using System.Drawing;
 
 namespace HomeBankingMindHub.Models.Entities
 {
@@ -15,31 +16,19 @@ namespace HomeBankingMindHub.Models.Entities
         public DateTime ThruDate { get; set; }
         public long ClientId { get; set; }
 
-        public string RandomCardNumber()
-        { Random rand = new Random();
-        string randomCardNumber = "";
-            for (int i = 0; i< 4; i++)
-            {
-                randomCardNumber += (1000 + rand.Next(8999));
-                if (i == 3) { break; }
 
-                randomCardNumber += "-";
-            } return randomCardNumber;
-        }
-
-
-    public Card(Client client, CardColor cardColorAux, CardFormDTO cardFormDTO) 
-            {
-            Random rand = new Random();
-            ClientId = client.Id;
-            CardHolder = client.FirstName + " " + client.LastName;
-            Type = cardFormDTO.Type.ToUpper().Equals(CardType.DEBIT.ToString()) ? CardType.DEBIT : CardType.CREDIT;
-            Color = cardColorAux;
-            Number = RandomCardNumber();
-            Cvv = 100 + rand.Next(899);
-            FromDate = DateTime.Now;
-            ThruDate = DateTime.Now.AddYears(4);
-            }
+        /*
+                public Card(long Id, string name, string lastname, CardType type, CardColor cardColor, string number, int cvv, DateTime dateTime)
+                { ClientId = Id;
+                    CardHolder = name + " " + lastname;
+                    Type = type;
+                    Color = cardColor;
+                    Number = number; 
+                    Cvv = cvv;
+                    FromDate = dateTime;
+                    ThruDate = dateTime.AddYears(4);
+                }
+        */
 
     }
 }

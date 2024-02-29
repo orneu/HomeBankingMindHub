@@ -1,4 +1,6 @@
-﻿namespace HomeBankingMindHub.Models.DTOs
+﻿using HomeBankingMindHub.Models.Entities;
+
+namespace HomeBankingMindHub.Models.DTOs
 {
     public class TransactionDTO
     {
@@ -8,6 +10,11 @@
         public string Description { get; set; }
         public DateTime Date { get; set; }
 
-
+         public TransactionDTO(Transaction tr) {
+          Id = tr.Id;
+          Type = tr.Type.ToString();
+          Amount = tr.Amount;
+          Description = tr.Description;
+          Date = tr.Date; }
     }
 }

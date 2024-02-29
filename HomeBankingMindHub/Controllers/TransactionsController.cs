@@ -1,9 +1,11 @@
 ﻿using HomeBankingMindHub.Models;
 using HomeBankingMindHub.Models.DTOs;
 using HomeBankingMindHub.Models.Entities;
+using HomeBankingMindHub.Services.Impl;
 using HomeBankingMindHub.Models.ENUM;
 using HomeBankingMindHub.Repositories;
 using HomeBankingMindHub.Repositories.Interfaces;
+using HomeBankingMindHub.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -17,15 +19,11 @@ namespace HomeBankingMindHub.Controllers
     [ApiController]
     public class TransactionsController : ControllerBase
     {
-        private IClientRepository _clientRepository;
-        private IAccountRepository _accountRepository;
-        private ITransactionRepository _transactionRepository;
+        private readonly ITransactionService _transactionService;
 
-        public TransactionsController(IClientRepository clientRepository, IAccountRepository accountRepository, ITransactionRepository transactionRepository)
+        public TransactionsController(ITransactionService transactionService)
         {
-            _clientRepository = clientRepository;
-            _accountRepository = accountRepository;
-            _transactionRepository = transactionRepository;
+            _transactionService = transactionService;
         }
 
         [HttpPost]
@@ -39,7 +37,7 @@ namespace HomeBankingMindHub.Controllers
                     return StatusCode(403, "Email vacío");
                 }
 
-                Client client = _clientRepository.FindByEmail(email);
+                Client client = _transactionService.findByEmail(email);
 
                 if (client == null)
                 {
@@ -73,8 +71,8 @@ namespace HomeBankingMindHub.Controllers
                     return StatusCode(403, "Cuenta destino no proporcionada");
                 }
 
-                //buscamos las cuentas
-                Account fromAccount = _accountRepository.FindByNumber(transferDTO.FromAccountNumber);
+                //buscamos la cuenta origen
+                Account fromAccount = _transactionService.findByNumber(transferDTO.FromAccountNumber);
                 if (fromAccount == null)
                 {
                     return StatusCode(403, "Cuenta de origen no existe");
@@ -87,14 +85,14 @@ namespace HomeBankingMindHub.Controllers
                 }
 
                 //buscamos la cuenta de destino
-                Account toAccount = _accountRepository.FindByNumber(transferDTO.ToAccountNumber);
+                Account toAccount = _transactionService.findByNumber(transferDTO.ToAccountNumber);
                 if (toAccount == null)
                 {
                     return StatusCode(403, "Cuenta de destino no existe");
                 }
 
                
-                _transactionRepository.Save(new Transaction
+                _transactionService.save(new Transaction
                 {
                     Type = TransactionType.DEBIT,
                     Amount = transferDTO.Amount * -1,
@@ -104,7 +102,7 @@ namespace HomeBankingMindHub.Controllers
                 });
 
                 
-                _transactionRepository.Save(new Transaction
+                _transactionService.save(new Transaction
                 {
                     Type = TransactionType.CREDIT,
                     Amount = transferDTO.Amount,
@@ -117,13 +115,13 @@ namespace HomeBankingMindHub.Controllers
                 fromAccount.Balance = fromAccount.Balance - transferDTO.Amount;
                 
                 //actualizamos la cuenta de origen
-                _accountRepository.Save(fromAccount);
+                _transactionService.save(fromAccount);
 
                 //a la cuenta de destino le sumamos el monto
                 toAccount.Balance = toAccount.Balance + transferDTO.Amount;
                 
                 //actualizamos la cuenta de destino
-                _accountRepository.Save(toAccount);
+                _transactionService.save(toAccount);
 
 
                 return Created("Creado con exito", fromAccount);

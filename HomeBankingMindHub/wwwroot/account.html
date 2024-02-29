@@ -30,7 +30,7 @@
                             <span class="fs-5">Banco Vinotinto</span>
                         </a>
                         <hr>
-                        <ul class="nav nav-pills flex-column mb-auto">
+                        <ul class="nav nav-pills flex-column mb-auto noPrint">
                             <li class="nav-item">
                                 <a href="/accounts.html" class="nav-link active">
                                     <i class="bi bi-inboxes"></i>
@@ -57,7 +57,7 @@
                             </li>
                         </ul>
                         <hr>
-                        <li class="nav nav-pills flex-column mb-auto">
+                        <li class="nav nav-pills flex-column mb-auto noPrint">
                             <button class="btn btn-danger img-fluid">Sign out</button>
                             <!--comente este boton para que no tire el warning el consola por no existir la fun signOut-->
                             <!--  <button class="btn btn-danger img-fluid"  v-on:click="signOut">Sign out</button>-->
@@ -68,6 +68,11 @@
                     <div class="row">
                         <div class="col">
                             <h1 class="display-1">Account details</h1>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col" style="text-align:right">
+                            <a href="#" onclick="javascript:window.print()" class="noPrint">print</a>
                         </div>
                     </div>
                     <div class="row mt-3">

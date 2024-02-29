@@ -70,3 +70,9 @@
 .index-container {
     margin-top: 10%;
 }
+
+@media print {
+    .noPrint {
+        display: none;
+    }
+}
