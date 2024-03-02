@@ -20,7 +20,10 @@ var app = new Vue({
                 this.loanTypes = response[0].data;
                 this.clientAccounts = response[1].data;
             })
-            .catch((error) => {
+                .catch((error) => {
+                    if (error.response.status === 401) {
+                        window.location.href = 'index.html'
+                    }
                 this.errorMsg = "Error getting data";
                 this.errorToats.show();
             })

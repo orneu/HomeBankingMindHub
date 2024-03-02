@@ -18,6 +18,9 @@ var app = new Vue({
                     app.accountInfo.transactions.sort((a, b) => parseInt(b.id - a.id))
                 })
                 .catch(function (error) {
+                    if (error.response.status === 401) {
+                        window.location.href = 'index.html'
+                    }
                     // handle error
                     //app.error = error;
                     this.errorMsg = "Error getting data";

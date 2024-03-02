@@ -50,9 +50,6 @@ builder.Services.AddScoped<IClientLoanRepository, ClientLoanRepository>();
 
 builder.Services.AddControllers();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 var app = builder.Build();
 
 // Create a scope to get the DbContext instance
@@ -75,7 +72,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline. (NO ES DESARROLLO)
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -84,7 +81,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline. (DESARROLLO)
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -93,16 +90,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 app.MapControllers();
 
